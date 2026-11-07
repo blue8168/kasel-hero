@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1240">
+<title>KASEL Hero</title>
+<meta name="robots" content="noindex">
+<link rel="license" href="credits">
+<style>
+@font-face{font-family:"Inter Tight";font-weight:400;src:url(fonts/inter-tight-latin-400-normal.woff2)}
+@font-face{font-family:"Inter Tight";font-weight:500;src:url(fonts/inter-tight-latin-500-normal.woff2)}
+@font-face{font-family:"Inter Tight";font-weight:600;src:url(fonts/inter-tight-latin-600-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:400;src:url(fonts/inter-latin-400-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:500;src:url(fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:600;src:url(fonts/inter-latin-600-normal.woff2)}
+:root{--band:#0b1a8f;--band-size:0px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px)}
+html,body{margin:0;padding:0;background:#0a1240;overflow:hidden;width:100%;height:100%;overscroll-behavior:none}
+@supports (height:100dvh){html,body{height:100dvh}}
+#view{position:fixed;left:0;top:0;right:0;bottom:0;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:956px;height:718px;transform-origin:0 0;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+#stage canvas{position:absolute;left:0;top:0;width:956px;height:718px;display:block}
+body.live #stage{cursor:none}
+#blue{z-index:0}#red{z-index:1}#ui{z-index:2;pointer-events:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+body.compact,body.compact #view{background:var(--band);transition:background-color .35s}
+body.compact.portrait #stage{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 var(--fade,0px));mask-image:linear-gradient(to bottom,transparent 0,#000 var(--fade,0px))}
+body.compact.landscape #stage{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--fade,0px));mask-image:linear-gradient(to right,transparent 0,#000 var(--fade,0px))}
+#chrome{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:5;color:#f5fbff;font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-shadow:0 1px 10px rgba(0,0,20,.18)}
+#chrome[hidden]{display:none}
+.c-nav{position:absolute;left:calc(var(--sal) + 12px);right:calc(var(--sar) + 12px);top:calc(var(--sat) + 6px);height:44px;display:flex;align-items:center;gap:8px}
+.c-logo{width:16px;height:16px;border:1.5px solid rgba(255,255,255,.95);border-radius:50%;position:relative;flex:none;margin-left:4px}
+.c-logo:before,.c-logo:after{content:"";position:absolute;background:rgba(255,255,255,.95)}
+.c-logo:before{left:-1px;right:-1px;top:50%;height:1.5px;margin-top:-.75px}.c-logo:after{top:-1px;bottom:-1px;left:50%;width:1.5px;margin-left:-.75px}
+.c-brand{font:600 17px/1 "Inter Tight",system-ui,sans-serif;letter-spacing:-.01em}
+.c-sp{flex:1}
+.c-credits{pointer-events:auto;color:rgba(235,240,255,.82);font:500 13px/1 "Inter",system-ui,sans-serif;text-decoration:none;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px}
+.c-pill{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid rgba(255,255,255,.55);border-radius:10px;font:500 14px/1 "Inter Tight",system-ui,sans-serif;box-sizing:border-box}
+.c-copy{position:absolute;left:calc(var(--sal) + 20px);right:calc(var(--sar) + 20px);top:calc(var(--sat) + 62px)}
+.c-title{margin:0;font:500 clamp(26px,7.6vw,46px)/1.1 "Inter Tight",system-ui,sans-serif;letter-spacing:-.02em;transition:opacity .35s}
+.c-para{margin:12px 0 0;font:400 15px/1.45 "Inter",system-ui,sans-serif;color:rgba(222,227,255,.9);max-width:34em;transition:opacity .35s}
+.c-cta{display:none;margin-top:16px;align-items:center;min-height:44px;padding:0 18px;border-radius:10px;background:#fff;color:#0d1a8a;font:500 14px/1 "Inter Tight",system-ui,sans-serif;text-shadow:none;transition:opacity .35s}
+body.copy-off .c-title,body.copy-off .c-para,body.copy-off .c-cta{opacity:0}
+.c-stats{position:absolute;left:calc(var(--sal) + 16px);right:calc(var(--sar) + 16px);bottom:calc(var(--sab) + 12px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.c-stats div{display:flex;flex-direction:column;gap:3px;padding:8px 10px;border-radius:10px;background:rgba(6,10,50,.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.c-stats b{font:500 16px/1.15 "Inter Tight",system-ui,sans-serif;white-space:nowrap}
+.c-stats span{font:400 12.5px/1.25 "Inter",system-ui,sans-serif;color:rgba(222,227,255,.85)}
+.c-hint{position:absolute;left:0;right:0;bottom:calc(var(--sab) + 84px);margin:0;text-align:center;transition:opacity .4s}
+.c-hint span{display:inline-block;padding:9px 14px;border-radius:999px;background:rgba(6,10,50,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font:500 13px/1.2 "Inter",system-ui,sans-serif}
+.c-hint[data-stage="1"] .h2,.c-hint[data-stage="2"] .h1,.c-hint[data-stage="0"] span{display:none}
+body.touched .c-hint[data-stage="1"],body.flown .c-hint[data-stage="2"]{opacity:0}
+@media (min-height:760px){body.portrait .c-cta{display:inline-flex}}
+@media (max-height:690px) and (orientation:portrait){.c-para{display:none}}
+@media (min-width:700px) and (orientation:portrait){.c-copy{left:calc(var(--sal) + 40px);top:calc(var(--sat) + 80px)}.c-para{font-size:17px}.c-stats{left:40px;right:40px;bottom:calc(var(--sab) + 24px)}.c-stats b{font-size:20px}.c-stats span{font-size:14px}.c-nav{left:28px;right:28px;top:calc(var(--sat) + 14px)}}
+body.landscape .c-copy{right:auto;width:min(40vw,380px);top:calc(var(--sat) + 56px)}
+body.landscape .c-title{font-size:clamp(22px,3.4vw,34px)}
+body.landscape .c-para{font-size:13.5px}
+body.landscape .c-stats{right:auto;width:min(44vw,400px);bottom:calc(var(--sab) + 10px)}
+body.landscape .c-stats div{padding:6px 8px}
+body.landscape .c-hint{left:auto;right:calc(var(--sar) + 12px);bottom:calc(var(--sab) + 12px)}
+body.capture *{transition:none!important}
+@media (prefers-reduced-motion:reduce){body.compact,body.compact #view,.c-title,.c-para,.c-hint{transition:none}}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three.js","three/addons/loaders/GLTFLoader.js":"./vendor/three.js","three/addons/environments/RoomEnvironment.js":"./vendor/three.js"}}</script>
+</head><body>
+<div id="view">
+<main id="stage" aria-label="KASEL — 설계도 위를 움직여 실제 제품 세계를 드러내고, 눌러서 전체를 펼치세요">
+  <canvas id="blue" aria-hidden="true"></canvas>
+  <canvas id="red" aria-hidden="true"></canvas>
+  <canvas id="ui" aria-hidden="true"></canvas>
+  <h1 class="sr">Draw the outline. We make the products.</h1>
+</main>
+</div>
+<div id="chrome" hidden>
+  <header class="c-nav"><span class="c-logo" aria-hidden="true"></span><span id="c-brand" class="c-brand">Kasel</span><span class="c-sp"></span><a class="c-credits" href="credits">Credits</a><span id="c-quote" class="c-pill" aria-hidden="true">Get a brief</span></header>
+  <section class="c-copy" aria-hidden="true"><p class="c-title"><span id="c-t1"></span><br><span id="c-t2"></span></p><p id="c-para" class="c-para"></p><span id="c-cta" class="c-cta"></span></section>
+  <p id="hint" class="c-hint" data-stage="1"><span class="h1">Drag across the drawing · tap to unfold</span><span class="h2">Drag to steer · tap to land</span></p>
+  <footer id="c-stats" class="c-stats" aria-hidden="true"></footer>
+</div>
+<script type="module" src="js/app.js"></script>
+</body></html>
