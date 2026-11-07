@@ -134,7 +134,7 @@ function drawDebug(st) {
 const px1 = document.createElement("canvas");
 px1.width = px1.height = 1;
 const px1c = px1.getContext("2d", { willReadFrequently: true });
-let bandN = 0, bandCol = "", redFull = false;
+let bandN = 0, bandCol = "", redFull = false, simPhase = "blue";
 let bandAt = [], bandX = -1e9, bandPhase = "";
 function sampleBand() {
   bandN++;
@@ -144,7 +144,8 @@ function sampleBand() {
     bandAt = [bandN + 3, bandN + 15, bandN + 45];
   }
   const moved = Math.abs(win.x0 - bandX) + Math.abs(win.y0 - (bandAt.y0 ?? win.y0)) > 6 && bandN % 20 === 0;
-  if (!(bandAt.includes(bandN) || moved || bandN === 1)) return;
+  const flux = (simPhase === "spread" || simPhase === "ret") && bandN % 8 === 0;
+  if (!(bandAt.includes(bandN) || moved || flux || bandN === 1)) return;
   bandX = win.x0;
   bandAt.y0 = win.y0;
   const lx = portrait ? clamp((win.panX ? win.x0 : 0) + Math.min(win.visW, W) / 2, 1, W - 1) : 2;
@@ -179,6 +180,7 @@ let copyOn = null, hintStage = 0;
 function frameUpdate(dt, st) {
   if (!compact) return;
   redFull = st.phase !== "blue";
+  simPhase = st.phase;
   if (st.phase === "blue") {
     win.tx = clamp(HOME_X - win.visW / 2, 0, Math.max(0, W - win.visW));
     win.ty = clamp(HOME_Y - win.visH / 2, 0, Math.max(0, H - win.visH));
